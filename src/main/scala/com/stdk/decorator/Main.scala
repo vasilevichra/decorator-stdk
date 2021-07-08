@@ -1,11 +1,9 @@
 package com.stdk.decorator
 
-import java.util.concurrent.atomic.AtomicInteger
-
 object Main extends App {
 
-  def foo()(implicit ic: AtomicInteger): String = "invocation"
+  val barDecorated = new Bar() with Buz
 
-  (1 to 5) foreach (x => println(s"${x}-th ${foo()}"))
+  (1 to barDecorated.max + 1) foreach (x => barDecorated.foo())
 
 }

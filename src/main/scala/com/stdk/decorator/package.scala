@@ -6,12 +6,22 @@ import java.util.concurrent.atomic.AtomicInteger
 
 package object decorator {
 
-  private val conf = ConfigFactory.load()
-  val max: Int = conf.getInt("max")
-  private var counter: AtomicInteger = new AtomicInteger(0)
+  trait Foo {
+    def foo(): Unit = println("Foo")
+  }
 
-  implicit def invocationCount: AtomicInteger =
-    if (counter.getAndIncrement() == max) throw new IllegalStateException(s"Limit in $max times for function call has been reached")
-    else counter
+  trait Buz extends Foo {
+    lazy val max: Int = ConfigFactory.load().getInt("max")
+    private var fooInvocationCounter = new AtomicInteger(0)
+
+    abstract override def foo(): Unit = {
+      if (fooInvocationCounter.getAndIncrement() == max) throw new IllegalStateException(s"Limit in $max times for function call has been reached")
+      else super.foo()
+    }
+  }
+
+  class Bar extends Foo {
+    override def foo(): Unit = println("Bar")
+  }
 
 }
